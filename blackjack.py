@@ -69,31 +69,28 @@ class Player():
             yield TypeError()
 
 class User(Player):
-    def __init__(self, name: str) -> None:
-        super().__init__("You")
+    def __init__(self) -> None:
+        super().__init__(name="You")
 
     def printHand(self):
         print(f"{self.name} have the following cards: ")
         for card in self.hand.cards:
             print(card)
 
-@dataclass
 class Table():
-    dealer: Player
-    players: list()
+    def __init__(self) -> None:
+        self.players = []
+        self.dealer = Dealer()
+        self.generateTable(4)
 
     def generateTable(self, num: int):
         #Add NPCs to table
         for x in range(0,num):
             self.players.append(NPC())
-        self.dealer = Dealer()
 
-@dataclass
 class Hand():
-    cards: list()
-
-    def __post_init__(self):
-        self.hand = Hand()
+    def __init__(self) -> None:
+        self.cards = []
     
     def calculateScore(self):
         result = 0
@@ -129,7 +126,7 @@ class NPC(Player):
     def __init__(self) -> None:
         super().__init__(self.nameGen()) #Get Random Name from namebase YAML
 
-    def nameGen():
+    def nameGen(self):
         return str(namebase['names'][randrange(0,len(namebase['names']))]).capitalize()
 
     def setName(self):
@@ -148,7 +145,60 @@ class Dealer(NPC):
     def __init__(self) -> None:
         super().__init__()
 
+#Universal Yes/No user input function
+def decisionCheck(yesInput: str, noInput: str): 
+    decision = input(">> ")
+    if decision == yesInput:
+        return True
+    elif decision == noInput:
+        return False
+    else:
+        print(f"{decision} is not a valid key")
+        print(f"The Valid Keys are [{yesInput}/{noInput}]")
+        return decisionCheck(yesInput,noInput)
 
+#Start a game of blackjack with a given table
+def startGame(table: Table):
+    # Check for winners (i.e. someone who has one 5 rounds)
+    # if no winners, start a new round. If winner, the table has won. End the game and announce the winner
+    # if not table.winnercheck():
+    #     roundStart()
+    # else:
+    #     print("Someone has won the game")
+    pass  
 
+def tableLook():
+    tableFound = False
+    print("You enter the casio. Through the garish wallpaper and carpet you find a table")
+    while not tableFound:
+        #Create and Introduce Table
+        newTable = Table()
+        print("On this table you see the following players: ")
+        for player in newTable.players:
+            print(player)
+        print("The dealer for the table is: ")
+        print(newTable.dealer)
+        print("Would you like to sit at this table? (y/n)")
+        if decisionCheck("y","n"):
+            #sit at table
+            print("You have sat at the table")
+            tableFound = True
+        else:
+            print("You look for a different table")
+    #Start game
+    newTable.players.append(User())
+    startGame(newTable)
 
+#Main Game Init
+def init():
+    print("-- Welcome to the Python Blackjack Casino! -- ")
+    print("Would you like to play or quit? (y/n)")
+    if decisionCheck("y","n"):
+        #start game
+        print("-- Starting Game! --")
+        tableLook()
+    else:
+        print(" -- Exiting Game! -- ")
+        pass
 
+init()
