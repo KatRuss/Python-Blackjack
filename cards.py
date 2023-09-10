@@ -50,6 +50,9 @@ class Deck():
     def DrawCards(self,amount):
         draw = []
         for x in range(0,amount):
+            if len(self.cards) <= 0:
+                print("** The dealer has pulled out a fresh deck of cards from under the table. **")
+                self.RefreshDeck()
             draw.append(self.cards.pop())
         return draw
     
