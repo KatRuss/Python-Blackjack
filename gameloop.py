@@ -23,11 +23,14 @@ class Table():
 
 def PlayRound(table: Table):
     for player in table.players:
+        player.hand.clearHand()
+        player.hand.cards += table.deck.DrawCards(2)
         player.playRound(table.deck)
 
 #Start a game of blackjack with a given table
 def GameLoop(table: Table):
-    # Check for winners (i.e. someone who has one 5 rounds) if no winners, start a new round. If winner, the table has won. End the game and announce the winner
+    # Check for winners (i.e. someone who has one 5 rounds) if no winners, start a new round. 
+    # If winner, the table has won. End the game and announce the winner
     winner = table.winnerCheck()
     if isinstance(winner,Player):
         # a player has won!
@@ -50,6 +53,7 @@ def tableLook():
         if decisionCheck("y","n"):
             #sit at table
             print("You have sat at the table")
+            print("---")
             tableFound = True
         else:
             print("You look for a different table")

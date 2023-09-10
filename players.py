@@ -2,6 +2,7 @@ from cards import Deck
 from random import randrange
 from abc import abstractmethod, ABC
 import yaml
+from controls import decisionCheck
 
 with open('namebase.yaml','r') as file:
     namebase = yaml.safe_load(file)
@@ -18,6 +19,9 @@ class Hand():
             else:
                 result += card.score
         return result
+    
+    def clearHand(self):
+        self.cards = []
 
 class Player(ABC):
 
@@ -44,8 +48,21 @@ class Player(ABC):
             yield TypeError()
     
     @abstractmethod
-    def playRound(self, deck:Deck):
+    def playDecision():
         pass
+
+    def playRound(self, deck:Deck):
+        print(f"--- {self}'s turn ---")
+        hasPassed = False
+        while hasPassed == False:
+            if not self.playDecision(deck):
+                hasPassed = True
+        print(f"{self.name} got {self.getScore()} points")
+        if self.getScore() > 21:
+            print(f"{self} has busted out")
+        elif self.getScore() == 21:
+            print(f"{self} has blackjack")
+        print(f"--- End of {self}'s turn --")
 
 class User(Player):
     def __init__(self) -> None:
@@ -56,8 +73,21 @@ class User(Player):
         for card in self.hand.cards:
             print(card)
 
-    def playRound(self, deck:Deck):
-        pass
+    def playDecision(self, deck:Deck):
+        self.printHand()
+        if self.hand.calculateScore() < 21:
+            print("Would you like to draw a card? (y/n)")
+            if decisionCheck("y","n"):
+                #choose to draw
+                print(f"{self.name} draws another card")
+                self.hand.cards += deck.DrawCards(1)
+                return True
+            else:
+                #choose to hold
+                print(f"{self.name} hold")
+                return False
+        else:
+            return False
 
 class NPC(Player):
 
@@ -71,23 +101,22 @@ class NPC(Player):
         self.name = self.nameGen()
 
     def playDecision(self, deck: Deck):
+        self.printHand()
         if self.hand.calculateScore() < 21:
             roll = randrange(0,100)
             if roll >= 50:
                 #choose to draw
+                print(f"{self.name} draws another card")
                 self.hand.cards += deck.DrawCards(1)
                 return True
             else:
                 #choose to hold
+                print(f"{self.name} holds")
                 return False
         else:
             return False
         
-    def playRound(self, deck:Deck):
-        hasPassed = False
-        while hasPassed == False:
-            if not self.playDecision(deck):
-                hasPassed = True
+
 
 class Dealer(NPC):
     def __init__(self) -> None:
