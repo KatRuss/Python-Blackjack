@@ -15,23 +15,34 @@ class Table():
             self.players.append(NPC())
         self.deck.RefreshDeck()
 
-    def winnerCheck(self):
+    def winnerOfGameCheck(self):
         for player in self.players:
             if player.getScore() >= 5:
                 return player
         return False # if there was no player who won, return None
+
+    def winnerOfRoundCheck(self):
+        valid = []
+        for x in self.players:
+            if x.getScore() <= 21:
+                print(f"{x} score: {x.getScore()}")
+                valid.append(x)
+            else:
+                print(f"{x} score: BUSTED")
+        return sorted(valid, key=lambda x: x.getScore(), reverse=True)[0]
 
 def PlayRound(table: Table):
     for player in table.players:
         player.hand.clearHand()
         player.hand.cards += table.deck.DrawCards(2)
         player.playRound(table.deck)
+    table.winnerOfRoundCheck().wins += 1
 
 #Start a game of blackjack with a given table
 def GameLoop(table: Table):
     # Check for winners (i.e. someone who has one 5 rounds) if no winners, start a new round. 
     # If winner, the table has won. End the game and announce the winner
-    winner = table.winnerCheck()
+    winner = table.winnerOfGameCheck()
     if isinstance(winner,Player):
         # a player has won!
         print(f"{winner} has won!")

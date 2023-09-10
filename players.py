@@ -41,12 +41,6 @@ class Player(ABC):
     def __str__(self) -> str:
         return f"{self.name} ({self.wins})"
     
-    def __lt__(self, other):
-        if type(other) == Player:
-            return self.getScore() < other.getScore()
-        else:
-            yield TypeError()
-    
     @abstractmethod
     def playDecision():
         pass
