@@ -17,7 +17,7 @@ class Table():
 
     def winnerOfGameCheck(self):
         for player in self.players:
-            if player.getScore() >= 5:
+            if player.wins >= 5:
                 return player
         return False # if there was no player who won, return None
 
@@ -36,6 +36,7 @@ def PlayRound(table: Table):
         player.hand.clearHand()
         player.hand.cards += table.deck.DrawCards(2)
         player.playRound(table.deck)
+    print(f"{table.winnerOfRoundCheck()} Won the Round!")
     table.winnerOfRoundCheck().wins += 1
 
 #Start a game of blackjack with a given table
@@ -43,11 +44,13 @@ def GameLoop(table: Table):
     # Check for winners (i.e. someone who has one 5 rounds) if no winners, start a new round. 
     # If winner, the table has won. End the game and announce the winner
     winner = table.winnerOfGameCheck()
-    if isinstance(winner,Player):
-        # a player has won!
-        print(f"{winner} has won!")
-    elif winner == False:
+
+    while winner == False:
         PlayRound(table)
+        winner = table.winnerOfGameCheck()
+    
+    print(f"{winner} Won the game")
+
 
 def tableLook():
     tableFound = False
