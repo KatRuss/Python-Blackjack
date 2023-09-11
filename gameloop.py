@@ -29,15 +29,24 @@ class Table():
                 valid.append(x)
             else:
                 print(f"{x} score: BUSTED")
-        return sorted(valid, key=lambda x: x.getScore(), reverse=True)[0]
+        if valid == []:
+            return False #If everyone busted, no one has won.
+        else:
+            return sorted(valid, key=lambda x: x.getScore(), reverse=True)[0]
 
 def PlayRound(table: Table):
     for player in table.players:
         player.hand.clearHand()
         player.hand.cards += table.deck.DrawCards(2)
         player.playRound(table.deck)
-    print(f"{table.winnerOfRoundCheck()} Won the Round!")
-    table.winnerOfRoundCheck().wins += 1
+
+    winner = table.winnerOfRoundCheck()
+    if winner == False:
+        print("No one Won")
+    else:
+        print(f"{winner} Won the Round!")
+        winner.wins += 1
+
 
 #Start a game of blackjack with a given table
 def GameLoop(table: Table):
